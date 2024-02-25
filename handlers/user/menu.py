@@ -1,36 +1,58 @@
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup
 from loader import dp, router
-from aiogram.filters import Command
-from keyboards.inline.products_from_cart import price_markup
+from aiogram.filters import Command, StateFilter
+from keyboards.inline.dialogue_markup import subscription_markup, subscription_showing_markup, payed_for_sub_markup
 from states import Dialogue_state
 from aiogram import types, F
+from lexicon.lexicon_ru import LEXICON_RU
 
 
-'''@dp.message_handler(IsAdmin(), commands='menu')
-async def admin_menu(message: Message):
-    markup = ReplyKeyboardMarkup(selective=True)
-
-    await message.answer('Меню', reply_markup=markup)'''
 
 @router.message(Command(commands=['start']))
 async def start_dialogue(message: Message, state: FSMContext):
-    #await Dialogue_state.view_subscription.set()
-    await message.answer("Привет, этот бот дает возможность оплатить доступ в клуб «Баффеты на Уораннах»Наш клуб это не просто место, где вы сможете получить инструменты и идеи, для увеличения своего заработка. Это сообщества, где вы всегда получите обратную связь, поддержку, общение с единомышленниками. Что Вам даст клуб? - Прибыльный долгосрочный портфель- Заработок на торговых сетапахАналитику рынкаЗакрытые материалыОбщениеЕженедельные дайджесты",
-                         reply_markup=price_markup())
+    await state.set_state(Dialogue_state.view_subscription)
+    await message.answer(LEXICON_RU['/start'])
+    await message.answer(text = LEXICON_RU['choose_subscription'],reply_markup=subscription_markup())
+
+
+@router.callback_query(StateFilter(Dialogue_state.view_subscription) and F.data=="subs_two_days")
+async def two_day_subs(callback: CallbackQuery, state: FSMContext):
+    await callback.message.edit_text(text = (LEXICON_RU['two_day_sub']+LEXICON_RU['paying_for_subscription']), reply_markup=subscription_showing_markup())
+    await state.set_state(Dialogue_state.pay_for_subscription)
+
+
+@router.callback_query(StateFilter(Dialogue_state.view_subscription), F.data=="subs_one_month")
+async def one_month_subs(callback: CallbackQuery, state: FSMContext):
+    await callback.message.edit_text(text = (LEXICON_RU['one_month_sub']+LEXICON_RU['paying_for_subscription']), reply_markup=subscription_showing_markup())
+    await state.set_state(Dialogue_state.pay_for_subscription)
+
+
+@router.callback_query(StateFilter(Dialogue_state.view_subscription), F.data=="subs_three_months")
+async def three_months_subs(callback: CallbackQuery, state: FSMContext):
+    await callback.message.edit_text(text = (LEXICON_RU['three_months_sub']+LEXICON_RU['paying_for_subscription']), reply_markup=subscription_showing_markup())
+    await state.set_state(Dialogue_state.pay_for_subscription)
+
+@router.callback_query(StateFilter(Dialogue_state.view_subscription), F.data=="subs_six_months")
+async def six_months_subs(callback: CallbackQuery, state: FSMContext):
+    await callback.message.edit_text(text = (LEXICON_RU['six_months_sub']+LEXICON_RU['paying_for_subscription']), reply_markup=subscription_showing_markup())
+    await state.set_state(Dialogue_state.pay_for_subscription)
+
+@router.callback_query(StateFilter(Dialogue_state.view_subscription), F.data=="subs_one_year")
+async def one_year_subs(callback: CallbackQuery, state: FSMContext):
+    await callback.message.edit_text(text = (LEXICON_RU['one_year_sub']+LEXICON_RU['paying_for_subscription']), reply_markup=subscription_showing_markup())
+    await state.set_state(Dialogue_state.pay_for_subscription)
+
+
+
+@router.callback_query(F.data=="back")
+async def one_year_subs(callback: CallbackQuery, state: FSMContext):
+    await callback.message.edit_text(text = LEXICON_RU['choose_subscription'], reply_markup=subscription_markup())
     await state.set_state(Dialogue_state.view_subscription)
 
-@router.callback_query(F.data == 'two_days')
-async def process_watch_btn(callback: CallbackQuery):
-    await callback.message.answer("Подписка на 2 дня за 19 евро!")
+@router.callback_query(F.data=="payed_for")
+async def one_year_subs(callback: CallbackQuery, state: FSMContext):
+    await callback.message.edit_text(text = LEXICON_RU["payed_for_subscription"], reply_markup=payed_for_sub_markup())
+    await state.set_state(Dialogue_state.view_subscription)
 
-'''@router.callback_query(lambda query: query.data in ['two_days', 'one_week'])
-async def handle_subscription_query(query: types.CallbackQuery):
-    print("CALLOUT")
-    await query.answer()  # Optional: Acknowledge the query
-    if query.data == 'two_days':
-        await query.message.answer("You chose 2 дня - 19 евро")
-    elif query.data == 'one_week':
-        await query.message.answer("You chose Неделя - 50 евро")
 
-    await Dialogue_state.next().set()'''
