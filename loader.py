@@ -15,4 +15,4 @@ dp.include_router(router)
 
 
 
-db = DatabaseManager('data/database.db')
+#db = DatabaseManager('data/database.db')

@@ -4,7 +4,8 @@ __pycache__/
 # Project files
 .idea/
 *.log
-.env
+.env.dev
+env/
 *.session
 data/config.py
 data/database.db
