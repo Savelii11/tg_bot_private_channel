@@ -1,16 +1,21 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from aiogram.utils.callback_data import CallbackData
+from aiogram.filters.callback_data import CallbackData
 
-product_cb = CallbackData('product', 'id', 'action')
 
-def product_markup(idx, count):
 
-    global product_cb
+def price_markup():
 
-    markup = InlineKeyboardMarkup()
-    back_btn = InlineKeyboardButton('⬅️', callback_data=product_cb.new(id=idx, action='decrease'))
-    count_btn = InlineKeyboardButton(count, callback_data=product_cb.new(id=idx, action='count'))
-    next_btn = InlineKeyboardButton('➡️', callback_data=product_cb.new(id=idx, action='increase'))
-    markup.row(back_btn, count_btn, next_btn)
+    two_days = 'two_days'
+    one_week= 'one_week'
+
+    two_days_button = InlineKeyboardButton(text='2 дня - 19 евро', callback_data=two_days)
+    one_week_button = InlineKeyboardButton(text='Неделя - 50 евро', callback_data=one_week)
+
+
+    markup = InlineKeyboardMarkup(
+        inline_keyboard=[[two_days_button],
+                         [one_week_button]]
+    )
+
 
     return markup
