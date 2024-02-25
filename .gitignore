@@ -5,6 +5,7 @@ __pycache__/
 .idea/
 *.log
 .env
+env/
 *.session
 data/config.py
 data/database.db
