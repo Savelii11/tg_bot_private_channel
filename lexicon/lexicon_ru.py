@@ -7,6 +7,6 @@ LEXICON_RU: dict[str, str] = {
     'three_months_sub': 'Подписка на 3 месяца за 400 евро!',
     'six_months_sub': 'Подписка на 6 месяцев за 600 евро!',
     'one_year_sub': 'Подписка на 1 год за 1000 евро!',
-    'paying_for_subscription':'\nЧтобы оплатить, переведите сумму подписки в USDT на этот кошелек!\nhgsykgb7847384839329hfehjfbc8737f3jekf',
+    'paying_for_subscription':'\nЧтобы оплатить, переведите сумму подписки в USDT на этот кошелек!\n<code>hgsykgb7847384839329hfehjfbc8737f3jekf</code>',
     'payed_for_subscription':'Пришлите нам хэш транзакции, и в скором времени мы добавим вас в группу.',
 }

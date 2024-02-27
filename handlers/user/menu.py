@@ -8,7 +8,10 @@ from aiogram import types, F
 from lexicon.lexicon_ru import LEXICON_RU
 import requests
 from data.config import SUBSCRIPTONS_SERVICE_API_URL
-
+import telegram
+from aiogram.enums.parse_mode import ParseMode
+import aiofiles
+from aiogram.types import InputFile
 
 
 
@@ -25,7 +28,8 @@ async def start_dialogue(message: Message, state: FSMContext):
 
     # Sending the POST request
     response = requests.post(url=SUBSCRIPTONS_SERVICE_API_URL, data=data)
-    await message.answer(LEXICON_RU['/start'])
+
+    await message.answer_photo(photo =types.FSInputFile(path='/Users/saveliigeorgiev/Shop-bot/media/btc.jpeg'), caption = LEXICON_RU['/start'])
 
     await message.answer(text = LEXICON_RU['choose_subscription'],reply_markup=subscription_markup())
 
@@ -41,7 +45,7 @@ async def two_day_subs(callback: CallbackQuery, state: FSMContext):
 
 @router.callback_query(StateFilter(Dialogue_state.view_subscription), F.data=="subs_one_month")
 async def one_month_subs(callback: CallbackQuery, state: FSMContext):
-    await callback.message.edit_text(text = (LEXICON_RU['one_month_sub']+LEXICON_RU['paying_for_subscription']), reply_markup=subscription_showing_markup())
+    await callback.message.edit_text(text = (LEXICON_RU['one_month_sub']+LEXICON_RU['paying_for_subscription']), reply_markup=subscription_showing_markup(), parse_mode=ParseMode.HTML)
     await state.set_state(Dialogue_state.pay_for_subscription)
 
 
@@ -69,7 +73,10 @@ async def one_year_subs(callback: CallbackQuery, state: FSMContext):
 
 @router.callback_query(F.data=="payed_for")
 async def one_year_subs(callback: CallbackQuery, state: FSMContext):
-    await callback.message.edit_text(text = LEXICON_RU["payed_for_subscription"], reply_markup=payed_for_sub_markup())
+    await callback.message.edit_text(text = LEXICON_RU["payed_for_subscription"], reply_markup=payed_for_sub_markup(), parse_mode=ParseMode.HTML)
     await state.set_state(Dialogue_state.view_subscription)
+
+
+
 
 
