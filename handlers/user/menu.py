@@ -7,7 +7,7 @@ from states import Dialogue_state
 from aiogram import types, F
 from lexicon.lexicon_ru import LEXICON_RU
 import requests
-from data.config import SUBSCRIPTONS_SERVICE_API_URL
+from data.config import API_USERS_URL, API_SUBSCRIPTIONS_URL
 import telegram
 from aiogram.enums.parse_mode import ParseMode
 import aiofiles
@@ -27,7 +27,7 @@ async def start_dialogue(message: Message, state: FSMContext):
     }
 
     # Sending the POST request
-    response = requests.post(url=SUBSCRIPTONS_SERVICE_API_URL, data=data)
+    requests.post(url=API_USERS_URL, data=data)
 
     await message.answer_photo(photo =types.FSInputFile(path='/Users/saveliigeorgiev/Shop-bot/media/btc.jpeg'), caption = LEXICON_RU['/start'])
 
