@@ -37,9 +37,11 @@ async def start_dialogue(message: Message, state: FSMContext):
     }
     users_sub.subscription = 'null'
     # Sending the POST request
+
     response = requests.post(url=USERS_SERVICE_API_URL, data=data)
     print(response.text)
     await message.answer_photo(photo =types.FSInputFile(path='/Users/saveliigeorgiev/Shop-bot/media/btc.jpeg'), caption = LEXICON_RU['/start'], reply_markup=view_sub_markup())
+
 
     await message.answer(text = LEXICON_RU['choose_subscription'],reply_markup=subscription_markup())
 
