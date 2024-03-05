@@ -48,7 +48,7 @@ def subscription_showing_markup():
 
 def payed_for_sub_markup():
     go_back = 'back'
-    go_back_button = InlineKeyboardButton(text='Вернуться назад', callback_data=go_back)
+    go_back_button = InlineKeyboardButton(text='Вернуться в меню', callback_data=go_back)
 
     markup = InlineKeyboardMarkup(
         inline_keyboard=[[go_back_button]]

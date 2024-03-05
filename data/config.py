@@ -1,7 +1,8 @@
 BOT_TOKEN = '7123517166:AAHezQxoEHJJzmw6l1DM8CHnqw3uVJ3HCIk'
 PROJECT_NAME = 'store-bot-example'
-SUBSCRIPTONS_SERVICE_API_URL = 'http://127.0.0.1:8000/subscriptions/v1/users/'
+SUBSCRIPTONS_SERVICE_API_URL = 'http://127.0.0.1:8000/api/v1/subscriptions/'
 
+USERS_SERVICE_API_URL = 'http://127.0.0.1:8000/api/v1/users/'
 #WEBHOOK_HOST = f"https://{PROJECT_NAME}.herokuapp.com"
 #WEBHOOK_PATH = '/webhook/' + BOT_TOKEN
 #WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
