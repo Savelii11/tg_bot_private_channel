@@ -13,7 +13,7 @@ import telegram
 from aiogram.enums.parse_mode import ParseMode
 import aiofiles
 from aiogram.types import InputFile
-
+import json
 
 class Plan:
     subscription = ''
@@ -105,7 +105,8 @@ async def waiting_for_confirmation(message: Message, state: FSMContext):
         'transaction_hash' : transaction_hash,
         'plan':users_sub.subscription,
     }
-    response = requests.post(url=USERS_SERVICE_API_URL, data=data)
+    response = requests.post(url=SUBSCRIPTONS_SERVICE_API_URL, data=data)
+    print(response.text)
     await message.answer(text=LEXICON_RU['checking_hash'], reply_markup=payed_for_sub_markup())
     await state.set_state(Dialogue_state.waiting_message)
 
@@ -117,7 +118,6 @@ async def hash_confirmed(message: Message, state: FSMContext):
 @router.message(F.text=='Моя подписка')
 async def show_my_subscription(message: Message, state: FSMContext):
 
-    #url = f'{SUBSCRIPTONS_SERVICE_API_URL}?telegram_username={message.from_user.username}'
     data = {
         'telegram_username': message.from_user.username,
     }
@@ -125,4 +125,16 @@ async def show_my_subscription(message: Message, state: FSMContext):
     print(url)
     print(message.from_user.username)
     request = requests.get(url=SUBSCRIPTONS_SERVICE_API_URL, data=data)
-    print(request.text)
+
+    response_details = json.loads(request.text)
+    print(response_details)
+    if request.text[12:24]=="Subscription":
+        await message.answer(text=LEXICON_RU['no_subscription'])
+    else:
+        subs_info = LEXICON_RU['present_subscription']+'\n'+'Дата начала: '+response_details['start_date']+'\n'+'Дата окончания подписки: '+response_details['end_date']+'\n'+'Цена: '+str(response_details['price'])+'$'
+
+        await message.answer(text=subs_info)
+
+@router.message(F.text=='Закрытый канал')
+async def show_private_channel(message: Message, state: FSMContext):
+    await message.answer(text=LEXICON_RU['present_private_channel'])
