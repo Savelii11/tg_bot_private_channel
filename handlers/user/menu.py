@@ -41,7 +41,7 @@ async def start_dialogue(message: Message, state: FSMContext):
     response = requests.post(url=USERS_SERVICE_API_URL, data=data)
     print(response.text)
     await message.answer_photo(photo =types.FSInputFile(path='/Users/saveliigeorgiev/Shop-bot/media/btc.jpeg'), caption = LEXICON_RU['/start'], reply_markup=view_sub_markup())
-
+    await message.answer(text = LEXICON_RU['additional_help'])
 
     await message.answer(text = LEXICON_RU['choose_subscription'],reply_markup=subscription_markup())
 
@@ -138,3 +138,7 @@ async def show_my_subscription(message: Message, state: FSMContext):
 @router.message(F.text=='Закрытый канал')
 async def show_private_channel(message: Message, state: FSMContext):
     await message.answer(text=LEXICON_RU['present_private_channel'])
+
+@router.message(Command(commands=['help']))
+async def show_private_channel(message: Message, state: FSMContext):
+    await message.answer(text=LEXICON_RU['contacts'])
