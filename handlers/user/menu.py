@@ -24,7 +24,39 @@ class Plan:
 
 users_sub = Plan(subscription='null')
 
+@router.message(F.text=='Закрытый канал')
+async def show_private_channel(message: Message, state: FSMContext):
+    await message.answer(text=LEXICON_RU['present_private_channel'])
+    await state.set_state(Dialogue_state.view_subscription)
 
+@router.message(F.text == "Моя подписка")
+async def show_my_subscription(message: Message, state: FSMContext):
+    await state.set_state(Dialogue_state.view_subscription)
+    url = f"http://127.0.0.1:8000/api/v1/subscriptions/?telegram_username={message.from_user.username}"
+    print(url)
+    print(message.from_user.username)
+    request = requests.get(url=url)
+
+    response_details = json.loads(request.text)
+    print(response_details)
+    if request.text[12:24] == "Subscription":
+        await message.answer(text=LEXICON_RU["no_subscription"])
+    else:
+        subs_info = (
+            LEXICON_RU["present_subscription"]
+            + "\n"
+            + "Дата начала: "
+            + response_details["start_date"]
+            + "\n"
+            + "Дата окончания подписки: "
+            + response_details["end_date"]
+            + "\n"
+            + "Цена: "
+            + str(response_details["price"])
+            + "$"
+        )
+
+        await message.answer(text=subs_info)
 @router.message(Command(commands=['start']))
 async def start_dialogue(message: Message, state: FSMContext):
     await state.set_state(Dialogue_state.view_subscription)
@@ -96,7 +128,7 @@ async def one_year_subs(callback: CallbackQuery, state: FSMContext):
     print(users_sub.subscription)
     await state.set_state(Dialogue_state.check_hash)
 
-@router.message(StateFilter(Dialogue_state.check_hash))
+@router.message(StateFilter(Dialogue_state.check_hash) and F.text!='Закрытый канал' and F.text != "Моя подписка")
 async def waiting_for_confirmation(message: Message, state: FSMContext):
     transaction_hash = message.text
     print(transaction_hash)
@@ -114,30 +146,6 @@ async def waiting_for_confirmation(message: Message, state: FSMContext):
 async def hash_confirmed(message: Message, state: FSMContext):
     await message.answer(text='Вы успешно оплатили подписку!', reply_markup=view_sub_markup())'''
 
-
-@router.message(F.text=='Моя подписка')
-async def show_my_subscription(message: Message, state: FSMContext):
-
-    data = {
-        'telegram_username': message.from_user.username,
-    }
-    url = 'http://127.0.0.1:8000/api/v1/subscriptions/'
-    print(url)
-    print(message.from_user.username)
-    request = requests.get(url=SUBSCRIPTONS_SERVICE_API_URL, data=data)
-
-    response_details = json.loads(request.text)
-    print(response_details)
-    if request.text[12:24]=="Subscription":
-        await message.answer(text=LEXICON_RU['no_subscription'])
-    else:
-        subs_info = LEXICON_RU['present_subscription']+'\n'+'Дата начала: '+response_details['start_date']+'\n'+'Дата окончания подписки: '+response_details['end_date']+'\n'+'Цена: '+str(response_details['price'])+'$'
-
-        await message.answer(text=subs_info)
-
-@router.message(F.text=='Закрытый канал')
-async def show_private_channel(message: Message, state: FSMContext):
-    await message.answer(text=LEXICON_RU['present_private_channel'])
 
 @router.message(Command(commands=['help']))
 async def show_private_channel(message: Message, state: FSMContext):
