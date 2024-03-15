@@ -26,7 +26,9 @@ users_sub = Plan(subscription='null')
 
 @router.message(F.text=='Закрытый канал')
 async def show_private_channel(message: Message, state: FSMContext):
-    await message.answer(text=LEXICON_RU['present_private_channel'])
+    await message.answer_photo(photo=types.FSInputFile(path='media/description.JPG'),
+                               caption = LEXICON_RU['present_private_channel'])
+
     await state.set_state(Dialogue_state.view_subscription)
 
 @router.message(F.text == "Моя подписка")
@@ -40,7 +42,10 @@ async def show_my_subscription(message: Message, state: FSMContext):
     response_details = json.loads(request.text)
     print(response_details)
     if request.text[12:24] == "Subscription":
-        await message.answer(text=LEXICON_RU["no_subscription"])
+
+        await message.answer_photo(photo=types.FSInputFile(path='media/personal.JPG'), caption=LEXICON_RU["no_subscription"])
+
+
     else:
         subs_info = (
             LEXICON_RU["present_subscription"]
@@ -55,8 +60,9 @@ async def show_my_subscription(message: Message, state: FSMContext):
             + str(response_details["price"])
             + "$"
         )
+        await message.answer_photo(photo=types.FSInputFile(path='media/personal.JPG'),
+                                   caption=subs_info)
 
-        await message.answer(text=subs_info)
 @router.message(Command(commands=['start']))
 async def start_dialogue(message: Message, state: FSMContext):
     await state.set_state(Dialogue_state.view_subscription)
@@ -72,7 +78,7 @@ async def start_dialogue(message: Message, state: FSMContext):
 
     response = requests.post(url=USERS_SERVICE_API_URL, data=data)
     print(response.text)
-    await message.answer_photo(photo =types.FSInputFile(path='/Users/saveliigeorgiev/Shop-bot/media/btc.jpeg'), caption = LEXICON_RU['/start'], reply_markup=view_sub_markup())
+    await message.answer_photo(photo =types.FSInputFile(path='media/main_image.JPG'), caption = LEXICON_RU['/start'], reply_markup=view_sub_markup())
     await message.answer(text = LEXICON_RU['additional_help'])
 
     await message.answer(text = LEXICON_RU['choose_subscription'],reply_markup=subscription_markup())
@@ -140,12 +146,13 @@ async def waiting_for_confirmation(message: Message, state: FSMContext):
     response = requests.post(url=SUBSCRIPTONS_SERVICE_API_URL, data=data)
     print(response.text)
     await message.answer(text=LEXICON_RU['checking_hash'], reply_markup=payed_for_sub_markup())
+
+    response_details = json.loads(response.text)
+    if(response_details['status']==400):
+        await message.answer(text = LEXICON_RU['subs_unsuccessful'])
+    else:
+        await message.answer(text=LEXICON_RU['subs_successful'])
     await state.set_state(Dialogue_state.waiting_message)
-
-'''@router.message(StateFilter(Dialogue_state.waiting_message))
-async def hash_confirmed(message: Message, state: FSMContext):
-    await message.answer(text='Вы успешно оплатили подписку!', reply_markup=view_sub_markup())'''
-
 
 @router.message(Command(commands=['help']))
 async def show_private_channel(message: Message, state: FSMContext):
