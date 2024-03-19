@@ -1,3 +1,5 @@
+import os
+from dotenv import load_dotenv
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardMarkup
 from loader import dp, router
@@ -15,13 +17,16 @@ import aiofiles
 from aiogram.types import InputFile
 import json
 
+
+load_dotenv()
 class Plan:
     subscription = ''
 
     def __init__(self, subscription):
         self.subscription = subscription
 
-
+SUBSCRIPTONS_SERVICE_API_URL = os.getenv("SUBSCRIPTONS_SERVICE_API_URL")
+USERS_SERVICE_API_URL = os.getenv("USERS_SERVICE_API_URL")
 users_sub = Plan(subscription='null')
 
 @router.message(F.text=='Закрытый канал')
