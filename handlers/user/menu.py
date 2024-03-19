@@ -34,7 +34,7 @@ async def show_private_channel(message: Message, state: FSMContext):
 @router.message(F.text == "Моя подписка")
 async def show_my_subscription(message: Message, state: FSMContext):
     await state.set_state(Dialogue_state.view_subscription)
-    url = f"http://127.0.0.1:8000/api/v1/subscriptions/?telegram_username={message.from_user.username}"
+    url = f"https://buffetsbot.com/api/v1/subscriptions/?telegram_username={message.from_user.username}"
     print(url)
     print(message.from_user.username)
     request = requests.get(url=url)
