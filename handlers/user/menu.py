@@ -24,14 +24,26 @@ class Plan:
 
 users_sub = Plan(subscription='null')
 
-@router.message(F.text=='Закрытый канал')
+@router.message(F.text=='Вернуться в главное меню')
+async def back_to_the_menu(message: Message):
+    await message.answer_photo(photo =types.FSInputFile(path='media/main_image.JPG'), caption = LEXICON_RU['/start'], reply_markup=view_sub_markup())
+
+@router.message(F.text=='ВАЖНОЕ')
+async def show_info(message: Message, state: FSMContext):
+    await message.answer_photo(photo=types.FSInputFile(path='media/imp.jpeg'),
+                               caption=LEXICON_RU['important'])
+
+@router.message(F.text=='БАФФЕТЫ НА УОРАННАХ')
 async def show_private_channel(message: Message, state: FSMContext):
     await message.answer_photo(photo=types.FSInputFile(path='media/description.JPG'),
                                caption = LEXICON_RU['present_private_channel'])
 
+    await message.answer(text="Тарифы подписок:", reply_markup=subscription_markup())
+
     await state.set_state(Dialogue_state.view_subscription)
 
-@router.message(F.text == "Моя подписка")
+
+@router.message(F.text == "ЛИЧНЫЙ КАБИНЕТ")
 async def show_my_subscription(message: Message, state: FSMContext):
     await state.set_state(Dialogue_state.view_subscription)
     url = f"http://127.0.0.1:8000/api/v1/subscriptions/?telegram_username={message.from_user.username}"
@@ -79,20 +91,10 @@ async def start_dialogue(message: Message, state: FSMContext):
     response = requests.post(url=USERS_SERVICE_API_URL, data=data)
     print(response.text)
     await message.answer_photo(photo =types.FSInputFile(path='media/main_image.JPG'), caption = LEXICON_RU['/start'], reply_markup=view_sub_markup())
-    await message.answer(text = LEXICON_RU['additional_help'])
-
-    await message.answer(text = LEXICON_RU['choose_subscription'],reply_markup=subscription_markup())
 
 
 
 
-
-@router.callback_query(StateFilter(Dialogue_state.view_subscription) and F.data=="subs_two_days")
-async def two_day_subs(callback: CallbackQuery, state: FSMContext):
-    users_sub.subscription = '2 days'
-
-    await callback.message.edit_text(text = (LEXICON_RU['two_day_sub']+LEXICON_RU['paying_for_subscription']), reply_markup=subscription_showing_markup())
-    await state.set_state(Dialogue_state.pay_for_subscription)
 
 
 @router.callback_query(StateFilter(Dialogue_state.view_subscription), F.data=="subs_one_month")
@@ -148,10 +150,11 @@ async def waiting_for_confirmation(message: Message, state: FSMContext):
     await message.answer(text=LEXICON_RU['checking_hash'], reply_markup=payed_for_sub_markup())
 
     response_details = json.loads(response.text)
+    print(response_details)
     if(response_details['status']==400):
         await message.answer(text = LEXICON_RU['subs_unsuccessful'])
     else:
-        await message.answer(text=LEXICON_RU['subs_successful'])
+        await message.answer_photo(photo=types.FSInputFile(path='media/succ.jpeg'),caption=LEXICON_RU['subs_successful'])
     await state.set_state(Dialogue_state.waiting_message)
 
 @router.message(Command(commands=['help']))
