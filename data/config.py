@@ -1,12 +1,7 @@
-BOT_TOKEN = '7123517166:AAHezQxoEHJJzmw6l1DM8CHnqw3uVJ3HCIk'
+BOT_TOKEN = '6734762198:AAEPAZeMrwW_r0z0ikqVjoHcon172nLoHlE'
 PROJECT_NAME = 'store-bot-example'
 
-SUBSCRIPTONS_SERVICE_API_URL = 'http://127.0.0.1:8000/api/v1/subscriptions/'
+SUBSCRIPTONS_SERVICE_API_URL = 'https://buffetsbot.com/api/v1/subscriptions/'
 
-USERS_SERVICE_API_URL = 'http://127.0.0.1:8000/api/v1/users/'
+USERS_SERVICE_API_URL = 'https://buffetsbot.com/api/v1/users/'
 
-#WEBHOOK_HOST = f"https://{PROJECT_NAME}.herokuapp.com"
-#WEBHOOK_PATH = '/webhook/' + BOT_TOKEN
-#WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
-
-#ADMINS = [000000000, 1234567890]
