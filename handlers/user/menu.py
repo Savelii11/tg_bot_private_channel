@@ -10,7 +10,7 @@ from states import Dialogue_state
 from aiogram import types, F
 from lexicon.lexicon_ru import LEXICON_RU
 import requests
-from data.config import SUBSCRIPTONS_SERVICE_API_URL, USERS_SERVICE_API_URL
+
 import telegram
 from aiogram.enums.parse_mode import ParseMode
 import aiofiles
@@ -29,14 +29,26 @@ SUBSCRIPTONS_SERVICE_API_URL = os.getenv("SUBSCRIPTONS_SERVICE_API_URL")
 USERS_SERVICE_API_URL = os.getenv("USERS_SERVICE_API_URL")
 users_sub = Plan(subscription='null')
 
-@router.message(F.text=='Закрытый канал')
+@router.message(F.text=='Вернуться в главное меню')
+async def back_to_the_menu(message: Message):
+    await message.answer_photo(photo =types.FSInputFile(path='media/main_image.JPG'), caption = LEXICON_RU['/start'], reply_markup=view_sub_markup())
+
+@router.message(F.text=='ВАЖНОЕ')
+async def show_info(message: Message, state: FSMContext):
+    await message.answer_photo(photo=types.FSInputFile(path='media/imp.jpeg'),
+                               caption=LEXICON_RU['important'])
+
+@router.message(F.text=='БАФФЕТЫ НА УОРАННАХ')
 async def show_private_channel(message: Message, state: FSMContext):
     await message.answer_photo(photo=types.FSInputFile(path='media/description.JPG'),
                                caption = LEXICON_RU['present_private_channel'])
 
+    await message.answer(text="Тарифы подписок:", reply_markup=subscription_markup())
+
     await state.set_state(Dialogue_state.view_subscription)
 
-@router.message(F.text == "Моя подписка")
+
+@router.message(F.text == "ЛИЧНЫЙ КАБИНЕТ")
 async def show_my_subscription(message: Message, state: FSMContext):
     await state.set_state(Dialogue_state.view_subscription)
     url = f"https://buffetsbot.com/api/v1/subscriptions/?telegram_username={message.from_user.username}"
@@ -48,7 +60,7 @@ async def show_my_subscription(message: Message, state: FSMContext):
     print(response_details)
     if request.text[12:24] == "Subscription":
 
-        await message.answer_photo(photo=types.FSInputFile(path='media/personal.JPG'), caption=LEXICON_RU["no_subscription"])
+        await message.answer_photo(photo=types.FSInputFile(path='media/personal.JPG'), caption=LEXICON_RU["no_subscription"], parse_mode=ParseMode.HTML)
 
 
     else:
@@ -83,26 +95,17 @@ async def start_dialogue(message: Message, state: FSMContext):
 
     response = requests.post(url=USERS_SERVICE_API_URL, data=data)
     print(response.text)
-    await message.answer_photo(photo =types.FSInputFile(path='media/main_image.JPG'), caption = LEXICON_RU['/start'], reply_markup=view_sub_markup())
-    await message.answer(text = LEXICON_RU['additional_help'])
-
-    await message.answer(text = LEXICON_RU['choose_subscription'],reply_markup=subscription_markup())
+    await message.answer_photo(photo =types.FSInputFile(path='media/main_image.JPG'), caption = LEXICON_RU['/start'], reply_markup=view_sub_markup(), parse_mode=ParseMode.HTML)
 
 
 
 
-
-@router.callback_query(StateFilter(Dialogue_state.view_subscription) and F.data=="subs_two_days")
-async def two_day_subs(callback: CallbackQuery, state: FSMContext):
-    users_sub.subscription = '2 days'
-
-    await callback.message.edit_text(text = (LEXICON_RU['two_day_sub']+LEXICON_RU['paying_for_subscription']), reply_markup=subscription_showing_markup())
-    await state.set_state(Dialogue_state.pay_for_subscription)
 
 
 @router.callback_query(StateFilter(Dialogue_state.view_subscription), F.data=="subs_one_month")
 async def one_month_subs(callback: CallbackQuery, state: FSMContext):
     users_sub.subscription = '1 month'
+
     await callback.message.edit_text(text = (LEXICON_RU['one_month_sub']+LEXICON_RU['paying_for_subscription']), reply_markup=subscription_showing_markup(), parse_mode=ParseMode.HTML)
     await state.set_state(Dialogue_state.pay_for_subscription)
 
@@ -153,10 +156,11 @@ async def waiting_for_confirmation(message: Message, state: FSMContext):
     await message.answer(text=LEXICON_RU['checking_hash'], reply_markup=payed_for_sub_markup())
 
     response_details = json.loads(response.text)
+    print(response_details)
     if(response_details['status']==400):
         await message.answer(text = LEXICON_RU['subs_unsuccessful'])
     else:
-        await message.answer(text=LEXICON_RU['subs_successful'])
+        await message.answer_photo(photo=types.FSInputFile(path='media/succ.jpeg'),caption=LEXICON_RU['subs_successful'])
     await state.set_state(Dialogue_state.waiting_message)
 
 @router.message(Command(commands=['help']))

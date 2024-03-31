@@ -5,24 +5,25 @@ from aiogram.filters.callback_data import CallbackData
 
 def subscription_markup():
 
-    two_days = 'subs_two_days'
+
     one_month = 'subs_one_month'
     three_months = 'subs_three_months'
     six_months = 'subs_six_months'
     one_year = 'subs_one_year'
 
-    two_days_button = InlineKeyboardButton(text='2 дня - 19 долларов', callback_data=two_days)
-    one_month_button = InlineKeyboardButton(text='Месяц - 150 долларов', callback_data=one_month)
-    three_months_button = InlineKeyboardButton(text='3 месяца - 400 долларов', callback_data=three_months)
-    six_months_button = InlineKeyboardButton(text='6 месяцев - 600 долларов', callback_data=six_months)
-    one_year_button = InlineKeyboardButton(text='1 год - 1000 долларов', callback_data=one_year)
+    one_month_button = InlineKeyboardButton(text='1 месяц', callback_data=one_month)
+    three_months_button = InlineKeyboardButton(text='3 месяца ', callback_data=three_months)
+    six_months_button = InlineKeyboardButton(text='6 месяцев ', callback_data=six_months)
+    one_year_button = InlineKeyboardButton(text='Годовая подписка', callback_data=one_year)
 
     markup = InlineKeyboardMarkup(
-        inline_keyboard=[[two_days_button],
-                         [one_month_button],
-                         [three_months_button],
+        inline_keyboard=[[one_year_button],
                          [six_months_button],
-                         [one_year_button]]
+                         [three_months_button],
+                        [one_month_button],
+
+                         ]
+
     )
 
 
